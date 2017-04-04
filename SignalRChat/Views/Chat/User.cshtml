@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "User";
+}
+<div class="container">
+    <section class="panel panel-default">
+        <div class="panel-heading">
+            <strong>API Manager</strong>
+        </div>
+        <section class="panel-body">
+            <form>
+                <div class="form-group">
+                    <label>Connection ID</label>
+                    <input class="form-control" type="text" id="connectionId" disabled="disabled" />
+                </div>
+                <div class="form-group">
+                    <label>User</label>
+                    <input class="form-control" type="text" id="txt-user-name" disabled="disabled" value="@ViewData["UserName"]" />
+                </div>
+            </form>
+            <div style="padding:15px 0px;" id="preview">
+
+            </div>
+        </section>
+    </section>
+    <section class="panel panel-default">
+        <div class="panel-heading">
+            <strong>Chat</strong>
+        </div>
+        <section class="panel-body">
+            <form>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input class="form-control" type="text" id="txt-user" />
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <input class="form-control" type="text" id="txt-msg" />
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-default" id="btn-chat-send">Send</button>
+                    <button type="button" class="btn btn-default" id="btn-chat-clear">Clear</button>
+                </div>
+            </form>
+            <div style="padding:15px 0px;" id="chatPreview">
+
+            </div>
+        </section>
+    </section>
+</div>
+
+@section scripts {
+    <script src="http://localhost:62989/Scripts/jquery.signalR-2.2.1.js"></script>
+    <script src="http://localhost:62989/signalr/hubs"></script>
+    <script>
+        $(function () {
+            function preview(msg) {
+                var $pre = $('<pre/>');
+                $pre.html(msg);
+                $('#preview').append($pre);
+            }            
+            function receive(result) {
+                switch (result.code) {
+                    case 'chat':
+                        chatMsg.apply(this, arguments);
+                        break;
+                }
+            }
+            function chatMsg(result) {
+                preview(result.cata);
+            }
+            $.connection.hub.url = "http://localhost:62989/signalr/hubs";
+            var ws = $.connection.chat;
+            ws.client.receive = receive;
+            $.connection.hub.qs = { 'username': '@ViewData["UserName"]' };
+            $.connection.hub.start().done(function () {
+                serverInit();
+                $('#connectionId').val(ws.connection.id);
+            });
+            function serverInit() {
+                $('#btn-chat-send').click(function () {
+                    var user = $('#txt-user').val(), msg = $('#txt-msg').val();
+                    ws.server.send(user, msg);
+                });
+
+                $('#btn-chat-clear').click(function () {
+                    $('#txt-user').val('');
+                    $('#txt-msg').val('').focus();
+                });
+            }
+        });
+    </script>
+}
