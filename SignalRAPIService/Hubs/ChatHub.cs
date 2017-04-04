@@ -151,8 +151,8 @@ namespace SignalRAPIService.Hubs
 
         private User GetUser(string connectionId)
         {
-            if (ConnectedUsers.Count > 0)
-                return ConnectedUsers.Single(x => x.ConnectionID == connectionId);
+            if (ConnectedUsers.Count > 0 && ConnectedUsers.Count(x => x.ConnectionID == connectionId) > 0)
+                return ConnectedUsers.First(x => x.ConnectionID == connectionId);
             return null;
         }
     }
