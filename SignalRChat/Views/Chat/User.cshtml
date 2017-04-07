@@ -49,37 +49,30 @@
 </div>
 
 @section scripts {
-    <script src="http://localhost:62989/Scripts/jquery.signalR-2.2.1.js"></script>
+    <script src="~/Scripts/signalR/jquery.signalR-2.2.1.js"></script>
     <script src="http://localhost:62989/signalr/hubs"></script>
+    <script src="~/Scripts/core/signalr.js"></script>
     <script>
         $(function () {
             function preview(msg) {
                 var $pre = $('<pre/>');
                 $pre.html(msg);
                 $('#preview').append($pre);
-            }            
-            function receive(result) {
-                switch (result.code) {
-                    case 'chat':
-                        chatMsg.apply(this, arguments);
-                        break;
-                }
             }
-            function chatMsg(result) {
+            function receiveChat(result) {
+                console.log('receive::', result);
                 preview(result.data);
             }
-            $.connection.hub.url = "http://localhost:62989/signalr/hubs";
-            var ws = $.connection.chat;
-            ws.client.receive = receive;
-            $.connection.hub.qs = { 'username': '@ViewData["UserName"]' };
-            $.connection.hub.start().done(function () {
-                serverInit();
-                $('#connectionId').val(ws.connection.id);
-            });
-            function serverInit() {
+            function receivePriceboard(result) {
+                preview('PRICEBOARD::' + result);
+            }
+
+            function serverInit(h) {
+                $('#connectionId').val(h.connection.id);
+
                 $('#btn-chat-send').click(function () {
                     var user = $('#txt-user').val(), msg = $('#txt-msg').val();
-                    ws.server.send(user, msg);
+                    h.server.send(user, msg);
                 });
 
                 $('#btn-chat-clear').click(function () {
@@ -87,6 +80,23 @@
                     $('#txt-msg').val('').focus();
                 });
             }
+            function serverPBInit(h) {
+                    
+            }
+
+            var vsignalR = new signalR('http://localhost:62989/signalr/hubs');           
+            var hubs = [{
+                name: 'chat',
+                query: { username: '@ViewData["UserName"]' },
+                client: { receive: receiveChat },
+                server: serverInit
+            }, {
+                name: 'priceboard',
+                query: { channel: 'hsx' },
+                client: { receive: receivePriceboard },
+                server: serverPBInit
+            }];
+            vsignalR.connect(hubs);
         });
     </script>
 }

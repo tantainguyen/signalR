@@ -242,6 +242,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="Scripts\core\signalr.js" />
     <Content Include="Scripts\signalR\jquery.signalR-2.2.1.js" />
     <Content Include="Scripts\signalR\jquery.signalR-2.2.1.min.js" />
     <Content Include="Scripts\libs\ai.0.15.0-build58334.js" />

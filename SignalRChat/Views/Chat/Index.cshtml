@@ -43,25 +43,16 @@
 </div>
 
 @section scripts {
-    <script src="http://localhost:62989/Scripts/jquery.signalR-2.2.1.js"></script>
+    <script src="~/Scripts/signalR/jquery.signalR-2.2.1.js"></script>
     <script src="http://localhost:62989/signalr/hubs"></script>
+    <script src="~/Scripts/core/signalr.js"></script>
     <script>
         $(function () {
-            function receive(msg) {
-                console.log(msg);
-            }
-            $.connection.hub.url = "http://localhost:62989/signalr/hubs";
-            var ws = $.connection.chat;
-            //must define client function to connection
-            ws.client.receive = receive;
-            $.connection.hub.qs = { 'username': 'administrator' };
-            $.connection.hub.start().done(function () {
-                serverInit();
+            function serverInit(ws) {
                 $('#connectionId').val(ws.connection.id);
-            });
-            function serverInit() {
                 $('#btn-chat-send').click(function () {
                     var user = $('#txt-user').val(), msg = $('#txt-msg').val();
+                    console.log('ws.server', ws.server);
                     ws.server.send(user, msg);
                 });
                 $('#btn-chat-send-all').click(function () {
@@ -74,6 +65,14 @@
                     $('#txt-msg').val('').focus();
                 });
             }
+            var vsignalR = new signalR('http://localhost:62989/signalr/hubs');
+            var hubs = [{
+                name: 'chat',
+                query: { username: 'administrator' },
+                client: undefined,
+                server: serverInit
+            }];
+            vsignalR.connect(hubs);
         });
     </script>
 }

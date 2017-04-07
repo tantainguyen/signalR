@@ -150,6 +150,7 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Global.asax" />
     <Content Include="packages.config" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -170,6 +171,9 @@
     <Compile Include="Core\Client.cs" />
     <Compile Include="Core\MsgResult.cs" />
     <Compile Include="Core\User.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
     <Compile Include="Hubs\BroadcastHub.cs" />
     <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Hubs\NewsHub.cs" />
